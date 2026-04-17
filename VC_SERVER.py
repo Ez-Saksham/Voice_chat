@@ -32,6 +32,11 @@ Encoding_Format = "utf-8"
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
+def Threading(Client,Address):
+   Succesful_Conection_Notify(Client,Address)
+   Client_Work(Client,Address)
+#---------------------------------------------------------------------------------------------------------------------------------------------#
+
 def Succesful_Conection_Notify(Client,Address):
 
         Message = "Connection established succesfully with the server!" #only bytes can be send over network
@@ -39,6 +44,7 @@ def Succesful_Conection_Notify(Client,Address):
         length_of_binary_message = str(len(binary_message)).encode(Encoding_Format)
         sending_message_length = length_of_binary_message 
         sending_message_length += b'' * (HEADER-len(length_of_binary_message))
+        print(sending_message_length)
         Client.send(sending_message_length)
         Client.send(binary_message)
 
@@ -48,28 +54,30 @@ def Succesful_Conection_Notify(Client,Address):
 def Client_Work(Client,Address):
         Connection = True
         print(f"Client is connected at : {Address}")
-        Succesful_Conection_Notify(Client,Address)
         while Connection:
                 String_DATA_LENGTH = Client.recv(HEADER).decode(Encoding_Format)
-                while String_DATA_LENGTH:
+                if String_DATA_LENGTH:
                         Incoming_DATA_LENGTH = int(String_DATA_LENGTH)
                         Plain_data = Client.recv(Incoming_DATA_LENGTH).decode(Encoding_Format)
                         if Plain_data == 'Disconnect':
                                 Connection = False
                         print(Plain_data)
+        Client.close()
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def Start_Server():
         SERVER.listen()
+        i = 0
         print(f"The server is listening in : [{host_ip}] with port number : [{PORT}]")
         while True:
-                client_connection, client_address =SERVER.accept()
-                thread = threading.Thread(target=Client_Work, args=(client_connection,client_address)) 
+                client_connection, client_address = SERVER.accept()
+                thread = threading.Thread(target=Threading, args=(client_connection,client_address)) 
                 thread.start()
                 print(f'Client Successfully Connected [NUMBER OF ACTIVE CLIENTS : {threading.active_count()-1}]')
-                Client_IP_list[threading.active_count()-2] , Client_PORT_list[threading.active_count()-2] = client_address
+                Client_IP_list , Client_PORT_list = client_address
                 print(Client_PORT_list)
                 print(Client_IP_list)
+                i +=1
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 Start_Server()
