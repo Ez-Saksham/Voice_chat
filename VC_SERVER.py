@@ -2,7 +2,7 @@ import socket
 import threading
 import sys
 
-HEADER = 1024
+HEADER = 64
 Client_IP_list = []
 Client_PORT_list = []
 
@@ -41,11 +41,10 @@ def Succesful_Conection_Notify(Client,Address):
 
         Message = "Connection established succesfully with the server!" #only bytes can be send over network
         binary_message = Message.encode(Encoding_Format)                #and only strings canbe converted to bytes
-        length_of_binary_message = str(len(binary_message)).encode(Encoding_Format)
-        sending_message_length = length_of_binary_message 
-        sending_message_length += b'' * (HEADER-len(length_of_binary_message))
-        print(sending_message_length)
-        Client.send(sending_message_length)
+        length_of_binary_message = str(len(binary_message)).encode(Encoding_Format).zfill(64)
+        #sending_message_length = length_of_binary_message  ( INSTED OF USING ZFILL WE CAN DO MANUAL PADDING LIKE THIS)
+        #sending_message_length += b' ' * (HEADER-len(length_of_binary_message))
+        Client.send(length_of_binary_message)
         Client.send(binary_message)
 
 
@@ -59,8 +58,6 @@ def Client_Work(Client,Address):
                 if String_DATA_LENGTH:
                         Incoming_DATA_LENGTH = int(String_DATA_LENGTH)
                         Plain_data = Client.recv(Incoming_DATA_LENGTH).decode(Encoding_Format)
-                        if Plain_data == 'Disconnect':
-                                Connection = False
                         print(Plain_data)
         Client.close()
 #---------------------------------------------------------------------------------------------------------------------------------------------#
