@@ -5,6 +5,7 @@ import sys
 HEADER = 64
 Client_IP_list = []
 Client_PORT_list = []
+Client_Name = []
 
 USER_CHOICE = int(input('Type 1 for custom IP / Type 2 for Local IP : '))
 SERVER = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -32,9 +33,9 @@ Encoding_Format = "utf-8"
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
-def Threading(Client,Address):
+def Threading(Client,Address,active_clients_index):
    Succesful_Conection_Notify(Client,Address)
-   Client_Work(Client,Address)
+   Client_Work(Client,Address,active_clients_index)
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def Succesful_Conection_Notify(Client,Address):
@@ -50,7 +51,8 @@ def Succesful_Conection_Notify(Client,Address):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
-def Client_Work(Client,Address):
+def Client_Work(Client,Address,active_clients_index):
+        i = 0
         Connection = True
         print(f"Client is connected at : {Address}")
         while Connection:
@@ -58,7 +60,12 @@ def Client_Work(Client,Address):
                 if String_DATA_LENGTH:
                         Incoming_DATA_LENGTH = int(String_DATA_LENGTH)
                         Plain_data = Client.recv(Incoming_DATA_LENGTH).decode(Encoding_Format)
-                        print(Plain_data)
+                        if Plain_data == "exit":
+                                Connection = False
+                        if i == 0:
+                                 Client_Name.append(Plain_data)
+                                 i +=1
+                        print(f"{Client_Name[active_clients_index]} : {Plain_data}")
         Client.close()
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -68,7 +75,7 @@ def Start_Server():
         print(f"The server is listening in : [{host_ip}] with port number : [{PORT}]")
         while True:
                 client_connection, client_address = SERVER.accept()
-                thread = threading.Thread(target=Threading, args=(client_connection,client_address)) 
+                thread = threading.Thread(target=Threading, args=(client_connection,client_address,threading.active_count()-1)) 
                 thread.start()
                 print(f'Client Successfully Connected [NUMBER OF ACTIVE CLIENTS : {threading.active_count()-1}]')
                 Client_IP_list , Client_PORT_list = client_address

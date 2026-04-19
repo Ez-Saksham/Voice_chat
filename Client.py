@@ -1,4 +1,3 @@
-
 import socket
 HEADER = 64      # fixed-size prefix telling the server how big the message is
 PORT   = 5050    # port the server listens on
@@ -9,8 +8,16 @@ ADDR   = (server, PORT)                              # (IP, port) tuple for sock
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # IPv4 TCP socket
 client.connect(ADDR)                                 # establish connection to server
 name =''
+i = True 
+#---------------------------------------------------------------------------------------------------------------------------------------------#
+
+def Starter(i):
+    Connection_notify(i)
+
+
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
+
 
 def sending(data):
     msg = data.encode(FORMAT)            # str → bytes
@@ -21,12 +28,20 @@ def sending(data):
     client.send(msg) 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
-def Message():
+
+def Message(i):
+    i = False
     while True:
-        msg = input("")
+        msg = input("--> ")
         sending(msg)
 
-def Connection_notify():
+#---------------------------------------------------------------------------------------------------------------------------------------------#
+
+
+def Connection_notify(i):
+    if i == True:
+        name =input('ENTER YOUR NAME : ')
+        sending(name)
     while True:
         length_data = client.recv(64).decode(FORMAT) # IN CASE OF MANUAL PADDING USE .strip()
         length = int(length_data)
@@ -34,9 +49,6 @@ def Connection_notify():
             actual_message = client.recv(length).decode(FORMAT)
             print(actual_message)
             print("                                                     ")
-        Message()
+        Message(i)
 #---------------------------------------------------------------------------------------------------------------------------------------------#
-   # first message = username handshake
-name =input('ENTER YOUR NAME : ')
-sending(name)
-Connection_notify()
+Starter(i)
