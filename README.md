@@ -113,7 +113,7 @@ ENTER YOUR NAME :
 - [x] Fixed-header message protocol
 - [x] Multi-threaded client handling
 - [x] Username handshake
-- [ ] Broadcast messages to all connected clients
+- [x] Broadcast messages to all connected clients
 - [ ] **Voice chat integration** 🎙️
 - [ ] Push-to-talk support
 - [ ] GUI (Tkinter or web-based)
