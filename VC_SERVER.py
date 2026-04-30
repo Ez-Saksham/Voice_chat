@@ -54,14 +54,14 @@ def Succesful_Conection_Notify(Client,Address):
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def Broadcast(Client,active_clients_index,Plain_data,):
-                        
+                if  Plain_data:      
                         Message = f"{Client_Name[active_clients_index]} : {Plain_data}"
                         binary_message = Message.encode(Encoding_Format)                #and only strings canbe converted to bytes
                         length_of_binary_message = str(len(binary_message)).encode(Encoding_Format).zfill(64)
                         #sending_message_length = length_of_binary_message  ( INSTED OF USING ZFILL WE CAN DO MANUAL PADDING LIKE THIS)
                         #sending_message_length += b' ' * (HEADER-len(length_of_binary_message))
                         for Client_ in Active_Client_Sockets:
-                                if Client_ is not Client or Plain_data == "" or Plain_data == " ":
+                                if Client_ is not Client:
                                         Client_.send(length_of_binary_message)
                                         Client_.send(binary_message)
                 
